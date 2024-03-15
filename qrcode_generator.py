@@ -1,21 +1,21 @@
-import sys
-import os
 import json
 import qrcode
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QLabel, QPushButton, QVBoxLayout,
-    QHBoxLayout, QWidget, QLineEdit, QComboBox, QMessageBox, QInputDialog
-)
-from PyQt5.QtGui import QPixmap
 from datetime import datetime
 
-class QRCodeGenerator(QMainWindow):
+from PyQt5 import QtCore
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QComboBox, QPushButton,
+    QLineEdit, QHBoxLayout, QVBoxLayout, QMessageBox,
+    QInputDialog
+)
+
+'''
+二维码生成页面
+'''
+class QRCodeGenerator(QWidget):
     def __init__(self):
         super().__init__()
-
-        self.setWindowTitle("二维码生成器")
-        self.setGeometry(100, 100, 600, 800)  # 调整窗口大小为 600x800
 
         self.presets = {}
         self.load_presets()
@@ -67,9 +67,7 @@ class QRCodeGenerator(QMainWindow):
         main_layout.addWidget(self.generate_button)
         main_layout.addWidget(self.qr_label)
 
-        central_widget = QWidget()
-        central_widget.setLayout(main_layout)
-        self.setCentralWidget(central_widget)
+        self.setLayout(main_layout)
 
     def load_presets(self):
         try:
@@ -134,13 +132,3 @@ class QRCodeGenerator(QMainWindow):
     def update_preset_combobox(self):
         self.preset_combobox.clear()
         self.preset_combobox.addItems(list(self.presets.keys()))
-
-    def closeEvent(self, event):
-        os.remove("qr_code.png")
-        event.accept()
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = QRCodeGenerator()
-    window.show()
-    sys.exit(app.exec_())
