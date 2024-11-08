@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 '''
 关于页面
 '''
+
+
 class AboutPage(QWidget):
     def __init__(self):
         super().__init__()

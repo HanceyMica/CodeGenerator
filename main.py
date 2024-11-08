@@ -11,6 +11,8 @@ from about_page import AboutPage
 '''
 主程序
 '''
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

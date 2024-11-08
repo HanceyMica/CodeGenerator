@@ -11,6 +11,8 @@ from PIL import Image
 '''
 条码生成页面
 '''
+
+
 class BarcodeGenerator(QWidget):
     def __init__(self):
         super().__init__()

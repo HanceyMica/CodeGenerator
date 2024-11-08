@@ -13,6 +13,8 @@ from PyQt5.QtWidgets import (
 '''
 二维码生成页面
 '''
+
+
 class QRCodeGenerator(QWidget):
     def __init__(self):
         super().__init__()
@@ -83,6 +85,23 @@ class QRCodeGenerator(QWidget):
     def is_valid_coordinate(self, coord):
         return coord.strip() and coord.replace('.', '', 1).isdigit()
 
+    # def generate_qr(self):
+    #     longitude = self.longitude_entry.text()
+    #     latitude = self.latitude_entry.text()
+    #
+    #     if not self.is_valid_coordinate(longitude) or not self.is_valid_coordinate(latitude):
+    #         QMessageBox.warning(self, "警告", "经纬度只能是非空数字！")
+    #         return
+    #
+    #     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #     qr_data = {"longitude": longitude, "latitude": latitude, "time": time_now, "type": "01"}
+    #     qr_code = qrcode.make(str(qr_data))
+    #     qr_code.save("qr_code.png")
+    #
+    #     qr_pixmap = QPixmap("qr_code.png").scaled(300, 300)
+    #     self.qr_label.setPixmap(qr_pixmap)
+    #     self.qr_label.setAlignment(QtCore.Qt.AlignCenter)  # 将二维码居中显示
+
     def generate_qr(self):
         longitude = self.longitude_entry.text()
         latitude = self.latitude_entry.text()
@@ -93,8 +112,16 @@ class QRCodeGenerator(QWidget):
 
         time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         qr_data = {"longitude": longitude, "latitude": latitude, "time": time_now, "type": "01"}
-        qr_code = qrcode.make(str(qr_data))
-        qr_code.save("qr_code.png")
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(str(qr_data))
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        img.save("qr_code.png")
 
         qr_pixmap = QPixmap("qr_code.png").scaled(300, 300)
         self.qr_label.setPixmap(qr_pixmap)
