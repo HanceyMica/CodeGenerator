@@ -1,8 +1,10 @@
 import sys
 import os
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QTabWidget
+from PyQt5.QtGui import QIcon
+
 
 from qrcode_generator import QRCodeGenerator
 from barcode_generator import BarcodeGenerator
@@ -19,6 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.setWindowTitle("计量箱建档码生成器")
         self.setGeometry(100, 100, 600, 800)
+        self.setWindowIcon(QtGui.QIcon('icon.png'))
 
         self.tab_widget = QTabWidget()
         # 二维码生成
@@ -45,6 +48,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    # 设置应用程序图标
+    app.setWindowIcon(QIcon('icon.png'))
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())

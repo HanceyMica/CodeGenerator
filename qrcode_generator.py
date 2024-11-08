@@ -50,6 +50,7 @@ class QRCodeGenerator(QWidget):
         self.generate_button.clicked.connect(self.generate_qr)
 
         self.qr_label = QLabel()
+        self.info_label = QLabel()  # 用于显示信息的标签
 
     def create_layout(self):
         preset_layout = QHBoxLayout()  # 将「预设：」和预设下拉选择框放置在一行
@@ -68,6 +69,7 @@ class QRCodeGenerator(QWidget):
         main_layout.addLayout(input_layout)
         main_layout.addWidget(self.generate_button)
         main_layout.addWidget(self.qr_label)
+        main_layout.addWidget(self.info_label)  # 添加信息标签到布局中
 
         self.setLayout(main_layout)
 
@@ -84,23 +86,6 @@ class QRCodeGenerator(QWidget):
 
     def is_valid_coordinate(self, coord):
         return coord.strip() and coord.replace('.', '', 1).isdigit()
-
-    # def generate_qr(self):
-    #     longitude = self.longitude_entry.text()
-    #     latitude = self.latitude_entry.text()
-    #
-    #     if not self.is_valid_coordinate(longitude) or not self.is_valid_coordinate(latitude):
-    #         QMessageBox.warning(self, "警告", "经纬度只能是非空数字！")
-    #         return
-    #
-    #     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #     qr_data = {"longitude": longitude, "latitude": latitude, "time": time_now, "type": "01"}
-    #     qr_code = qrcode.make(str(qr_data))
-    #     qr_code.save("qr_code.png")
-    #
-    #     qr_pixmap = QPixmap("qr_code.png").scaled(300, 300)
-    #     self.qr_label.setPixmap(qr_pixmap)
-    #     self.qr_label.setAlignment(QtCore.Qt.AlignCenter)  # 将二维码居中显示
 
     def generate_qr(self):
         longitude = self.longitude_entry.text()
@@ -126,6 +111,12 @@ class QRCodeGenerator(QWidget):
         qr_pixmap = QPixmap("qr_code.png").scaled(300, 300)
         self.qr_label.setPixmap(qr_pixmap)
         self.qr_label.setAlignment(QtCore.Qt.AlignCenter)  # 将二维码居中显示
+
+        self.update_info_label(longitude, latitude, time_now)  # 更新信息标签
+
+    def update_info_label(self, longitude, latitude, time_now):
+        info_text = f"\t\t当前经度：{longitude}\n\t\t当前纬度：{latitude}\n\t\t当前时间：{time_now}"
+        self.info_label.setText(info_text)  # 设置信息标签的文本
 
     def save_preset(self):
         longitude = self.longitude_entry.text()
@@ -159,3 +150,13 @@ class QRCodeGenerator(QWidget):
     def update_preset_combobox(self):
         self.preset_combobox.clear()
         self.preset_combobox.addItems(list(self.presets.keys()))
+
+# 如果需要运行这个程序，可以添加以下代码：
+if __name__ == "__main__":
+    from PyQt5.QtWidgets import QApplication
+    import sys
+
+    app = QApplication(sys.argv)
+    window = QRCodeGenerator()
+    window.show()
+    sys.exit(app.exec_())

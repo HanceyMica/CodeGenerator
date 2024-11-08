@@ -2,8 +2,8 @@ import sys
 from cx_Freeze import setup, Executable
 
 build_exe_options = {
-    "packages": ["os", "sys", "PyQt5", "qrcode", "barcode", "PIL", "json"],
-    "include_files": ["Presets.json"],
+    "packages": ["os", "sys", "PyQt5.QtWidgets", "PyQt5.QtCore", "PyQt5.QtGui", "qrcode", "barcode", "PIL", "json"],
+    "include_files": ["Presets.json", "icon.png"],
     "excludes": [],
     "include_msvcr": True,
 }
@@ -17,13 +17,14 @@ executables = [
         "main.py",
         base=base,
         icon="favicon.ico"
+        # icon="icon.png",
         # Optionally, you can include an icon file for the executable
     )
 ]
 
 setup(
     name="Measurement Box Generator",
-    version="1.0",
+    version="1.0.0.1",
     description="An application for generating measurement box codes",
     options={"build_exe": build_exe_options},
     executables=executables
