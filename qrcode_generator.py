@@ -42,9 +42,14 @@ class QRCodeGenerator(QWidget):
         self.load_button.clicked.connect(self.load_preset)
         self.delete_button = QPushButton("删除预设")
         self.delete_button.clicked.connect(self.delete_preset)
+
+        self.clear_button = QPushButton("清除输入框")  # 清除输入框按钮
+        self.clear_button.clicked.connect(self.clear_inputs)  # 连接槽函数
+
         self.save_load_delete_layout.addWidget(self.save_button)
         self.save_load_delete_layout.addWidget(self.load_button)
         self.save_load_delete_layout.addWidget(self.delete_button)
+        self.save_load_delete_layout.addWidget(self.clear_button)
 
         self.longitude_label = QLabel("经度：")
         self.longitude_entry = QLineEdit()
@@ -75,11 +80,11 @@ class QRCodeGenerator(QWidget):
         main_layout.addLayout(preset_layout)
         main_layout.addLayout(self.save_load_delete_layout)
         main_layout.addLayout(input_layout)
-        main_layout.addWidget(self.generate_button)
+        main_layout.addWidget(self.generate_button) # 添加生成按钮
         main_layout.addWidget(self.save_qr_button)  # 添加保存按钮
-        main_layout.addWidget(self.qr_label)
-        main_layout.addWidget(self.info_label)  # 添加信息标签到布局中
-
+        main_layout.addWidget(self.clear_button)    # 添加清除输入框按钮
+        main_layout.addWidget(self.qr_label)        # 二维码生成label
+        main_layout.addWidget(self.info_label)      # 添加信息标签到布局中
 
         self.setLayout(main_layout)
 
@@ -90,6 +95,11 @@ class QRCodeGenerator(QWidget):
 
         if action == save_action:
             self.save_qr_code()
+
+    # 清除输入框内容
+    def clear_inputs(self):
+        self.longitude_entry.clear()  # 清除经度输入框内容
+        self.latitude_entry.clear()  # 清除纬度输入框内容
 
     def load_presets(self):
         try:
