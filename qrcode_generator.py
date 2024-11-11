@@ -3,17 +3,16 @@ import qrcode
 from datetime import datetime
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QCursor
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QComboBox, QPushButton,
     QLineEdit, QHBoxLayout, QVBoxLayout, QMessageBox,
-    QInputDialog
+    QInputDialog, QApplication, QMenu, QFileDialog
 )
 
 '''
 二维码生成页面
 '''
-
 
 class QRCodeGenerator(QWidget):
     def __init__(self):
@@ -24,6 +23,12 @@ class QRCodeGenerator(QWidget):
 
         self.create_widgets()
         self.create_layout()
+
+
+        # 设置右键菜单
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.show_context_menu)
+
 
     def create_widgets(self):
         self.preset_label = QLabel("预设：")
@@ -49,6 +54,9 @@ class QRCodeGenerator(QWidget):
         self.generate_button = QPushButton("生成二维码")
         self.generate_button.clicked.connect(self.generate_qr)
 
+        self.save_qr_button = QPushButton("保存二维码")
+        self.save_qr_button.clicked.connect(self.save_qr_code)
+
         self.qr_label = QLabel()
         self.info_label = QLabel()  # 用于显示信息的标签
 
@@ -68,10 +76,20 @@ class QRCodeGenerator(QWidget):
         main_layout.addLayout(self.save_load_delete_layout)
         main_layout.addLayout(input_layout)
         main_layout.addWidget(self.generate_button)
+        main_layout.addWidget(self.save_qr_button)  # 添加保存按钮
         main_layout.addWidget(self.qr_label)
         main_layout.addWidget(self.info_label)  # 添加信息标签到布局中
 
+
         self.setLayout(main_layout)
+
+    def show_context_menu(self, pos):
+        menu = QMenu()
+        save_action = menu.addAction("保存二维码")
+        action = menu.exec_(QCursor.pos())
+
+        if action == save_action:
+            self.save_qr_code()
 
     def load_presets(self):
         try:
@@ -80,6 +98,14 @@ class QRCodeGenerator(QWidget):
         except FileNotFoundError:
             self.presets = {}
 
+    def save_qr_code(self):
+        if self.qr_label.pixmap():
+            filename, _ = QFileDialog.getSaveFileName(self, "保存二维码", "", "Images (*.png);;All Files (*)")
+            if filename:
+                self.qr_label.pixmap().save(filename)
+                QMessageBox.information(self, "成功", "二维码已保存")
+        else:
+            QMessageBox.warning(self, "警告", "无二维码，无法保存")
     def save_presets_to_file(self):
         with open("Presets.json", "w", encoding="utf-8") as file:
             json.dump(self.presets, file, ensure_ascii=False)
@@ -97,13 +123,17 @@ class QRCodeGenerator(QWidget):
 
         time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         qr_data = {"longitude": longitude, "latitude": latitude, "time": time_now, "type": "01"}
+        self.create_qr_code(qr_data)
+        self.update_info_label(longitude, latitude, time_now)  # 确保在这里调用 update_info_label 方法
+
+    def create_qr_code(self, data):
         qr = qrcode.QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,
             box_size=10,
             border=4,
         )
-        qr.add_data(str(qr_data))
+        qr.add_data(str(data))
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         img.save("qr_code.png")
@@ -111,8 +141,6 @@ class QRCodeGenerator(QWidget):
         qr_pixmap = QPixmap("qr_code.png").scaled(300, 300)
         self.qr_label.setPixmap(qr_pixmap)
         self.qr_label.setAlignment(QtCore.Qt.AlignCenter)  # 将二维码居中显示
-
-        self.update_info_label(longitude, latitude, time_now)  # 更新信息标签
 
     def update_info_label(self, longitude, latitude, time_now):
         info_text = f"\t\t当前经度：{longitude}\n\t\t当前纬度：{latitude}\n\t\t当前时间：{time_now}"
@@ -151,12 +179,11 @@ class QRCodeGenerator(QWidget):
         self.preset_combobox.clear()
         self.preset_combobox.addItems(list(self.presets.keys()))
 
-# 如果需要运行这个程序，可以添加以下代码：
+
 if __name__ == "__main__":
     from PyQt5.QtWidgets import QApplication
     import sys
-
-    app = QApplication(sys.argv)
+    app = QApplication([])
     window = QRCodeGenerator()
     window.show()
     sys.exit(app.exec_())
