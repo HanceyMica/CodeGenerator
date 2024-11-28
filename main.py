@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtGui import QIcon
 
-
 from qrcode_generator import QRCodeGenerator
 from barcode_generator import BarcodeGenerator
 from about_page import AboutPage

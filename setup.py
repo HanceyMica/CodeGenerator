@@ -24,8 +24,8 @@ executables = [
 
 setup(
     name="Measurement Box Generator",
-    version="1.0.0.1",
-    description="An application for generating measurement box codes",
+    version="1.0.0.3",
+    description="计量箱建档生成器",
     options={"build_exe": build_exe_options},
     executables=executables
 )
