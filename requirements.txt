@@ -1,0 +1,5 @@
+PyQt5>=5.15.0
+qrcode>=7.3
+python-barcode>=0.13.1
+Pillow>=8.0.0
+cx_Freeze>=6.11.0

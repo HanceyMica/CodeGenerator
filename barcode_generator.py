@@ -1,14 +1,15 @@
+import os
+import tempfile
+
 import barcode
-from barcode.writer import ImageWriter
 from PyQt5 import QtCore
+from PyQt5.QtGui import QPixmap, QKeySequence
 from PyQt5.QtWidgets import (
     QApplication, QLabel, QPushButton, QVBoxLayout,
     QHBoxLayout, QWidget, QLineEdit, QMessageBox, QMenu, QFileDialog,
     QShortcut
 )
-from PyQt5.QtGui import QPixmap, QKeySequence
-import tempfile
-import os
+from barcode.writer import ImageWriter
 
 '''
 条码生成页面

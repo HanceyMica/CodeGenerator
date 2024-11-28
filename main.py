@@ -1,13 +1,13 @@
-import sys
 import os
+import sys
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QTabWidget
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QTabWidget
 
-from qrcode_generator import QRCodeGenerator
-from barcode_generator import BarcodeGenerator
 from about_page import AboutPage
+from barcode_generator import BarcodeGenerator
+from qrcode_generator import QRCodeGenerator
 
 '''
 主程序

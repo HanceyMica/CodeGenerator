@@ -1,7 +1,7 @@
 import json
-import qrcode
 from datetime import datetime
 
+import qrcode
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QCursor, QKeySequence
 from PyQt5.QtWidgets import (
