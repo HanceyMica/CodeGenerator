@@ -7,7 +7,7 @@ from PyQt5.QtGui import QPixmap, QKeySequence
 from PyQt5.QtWidgets import (
     QApplication, QLabel, QPushButton, QVBoxLayout,
     QHBoxLayout, QWidget, QLineEdit, QMessageBox, QMenu, QFileDialog,
-    QShortcut
+    QShortcut, QFrame
 )
 from barcode.writer import ImageWriter
 
@@ -20,33 +20,72 @@ class BarcodeGenerator(QWidget):
     def __init__(self):
         super().__init__()
 
+        # 设置整体边距
+        self.setContentsMargins(16, 16, 16, 16)
+
         self.label = QLabel("请输入条形码号：")
         self.entry = QLineEdit()
+        self.entry.setPlaceholderText("请输入条形码号")
+        self.entry.setMinimumWidth(200)
+
         self.generate_button = QPushButton("生成条形码")
+        self.generate_button.setMinimumHeight(36)
         self.save_button = QPushButton("保存条形码")
+        self.save_button.setMinimumHeight(36)
         self.clear_button = QPushButton("清空")
+        self.clear_button.setMinimumWidth(100)
+
         self.barcode_image = QLabel()
+        self.barcode_image.setStyleSheet("""
+            QLabel {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 4px;
+                padding: 16px;
+            }
+        """)
 
         self.setup_ui()
         self.setup_actions()
         self.setup_shortcuts()
 
     def setup_ui(self):
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        # 创建卡片容器
+        input_card = QFrame()
+        input_card.setStyleSheet("""
+            QFrame {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
 
+        # 输入部分布局
         input_layout = QHBoxLayout()
         input_layout.addWidget(self.label)
         input_layout.addWidget(self.entry)
         input_layout.addWidget(self.clear_button)
+        input_layout.setSpacing(8)
 
+        # 按钮布局
         button_layout = QHBoxLayout()
         button_layout.addWidget(self.generate_button)
         button_layout.addWidget(self.save_button)
+        button_layout.setSpacing(8)
 
-        layout.addLayout(input_layout)
-        layout.addLayout(button_layout)
-        layout.addWidget(self.barcode_image)
+        # 卡片内部布局
+        card_layout = QVBoxLayout(input_card)
+        card_layout.addLayout(input_layout)
+        card_layout.addLayout(button_layout)
+
+        # 主布局
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(input_card)
+        main_layout.addWidget(self.barcode_image, alignment=QtCore.Qt.AlignCenter)
+        main_layout.setSpacing(16)
+
+        self.setLayout(main_layout)
 
         self.save_button.setEnabled(False)
 

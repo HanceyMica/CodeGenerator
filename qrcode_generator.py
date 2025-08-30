@@ -7,7 +7,7 @@ from PyQt5.QtGui import QPixmap, QCursor, QKeySequence
 from PyQt5.QtWidgets import (
     QWidget, QLabel, QComboBox, QPushButton,
     QLineEdit, QHBoxLayout, QVBoxLayout, QMessageBox,
-    QMenu, QFileDialog, QShortcut
+    QMenu, QFileDialog, QShortcut, QFrame
 )
 
 '''
@@ -21,6 +21,9 @@ class QRCodeGenerator(QWidget):
         self.presets = {}
         self.load_presets()
 
+        # 设置整体边距
+        self.setContentsMargins(16, 16, 16, 16)
+        
         self.create_widgets()
         self.create_layout()
 
@@ -33,69 +36,117 @@ class QRCodeGenerator(QWidget):
 
 
     def create_widgets(self):
+        # 预设部分
         self.preset_label = QLabel("预设：")
         self.preset_combobox = QComboBox()
         self.preset_combobox.addItems(list(self.presets.keys()))
+        self.preset_combobox.setMinimumWidth(200)
 
-        self.save_load_delete_layout = QHBoxLayout()  # 保存预设、加载预设、删除预设放在一行
+        # 按钮部分
+        self.save_load_delete_layout = QHBoxLayout()
         self.save_button = QPushButton("保存预设")
         self.save_button.clicked.connect(self.save_preset)
         self.load_button = QPushButton("加载预设")
         self.load_button.clicked.connect(self.load_preset)
         self.delete_button = QPushButton("删除预设")
         self.delete_button.clicked.connect(self.delete_preset)
+        self.clear_button = QPushButton("清除输入框")
+        self.clear_button.clicked.connect(self.clear_inputs)
 
-        self.clear_button = QPushButton("清除输入框")  # 清除输入框按钮
-        self.clear_button.clicked.connect(self.clear_inputs)  # 连接槽函数
+        # 设置按钮样式
+        for button in [self.save_button, self.load_button, self.delete_button, self.clear_button]:
+            button.setMinimumWidth(100)
 
         self.save_load_delete_layout.addWidget(self.save_button)
         self.save_load_delete_layout.addWidget(self.load_button)
         self.save_load_delete_layout.addWidget(self.delete_button)
         self.save_load_delete_layout.addWidget(self.clear_button)
+        self.save_load_delete_layout.setSpacing(8)
 
+        # 坐标输入部分
         self.longitude_label = QLabel("经度：")
         self.longitude_entry = QLineEdit()
+        self.longitude_entry.setPlaceholderText("请输入经度")
         self.latitude_label = QLabel("纬度：")
         self.latitude_entry = QLineEdit()
+        self.latitude_entry.setPlaceholderText("请输入纬度")
 
+        # 主要操作按钮
         self.generate_button = QPushButton("生成二维码")
         self.generate_button.clicked.connect(self.generate_qr)
+        self.generate_button.setMinimumHeight(36)
 
         self.save_qr_button = QPushButton("保存二维码")
         self.save_qr_button.clicked.connect(self.save_qr_code)
+        self.save_qr_button.setMinimumHeight(36)
 
+        # 显示区域
         self.qr_label = QLabel()
-        self.info_label = QLabel()  # 用于显示信息的标签
-        self.info_label.setAlignment(QtCore.Qt.AlignLeft)  # 文本左对齐
+        self.qr_label.setStyleSheet("""
+            QLabel {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 4px;
+                padding: 16px;
+            }
+        """)
+
+        self.info_label = QLabel()
+        self.info_label.setAlignment(QtCore.Qt.AlignLeft)
         self.info_label.setStyleSheet("""
             QLabel {
-                padding: 10px;
-                margin: 0 auto;  /* 水平居中 */
-                min-width: 300px;  /* 设置最小宽度 */
-                max-width: 500px;  /* 设置最大宽度 */
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 4px;
+                padding: 16px;
+                margin: 8px;
+                min-width: 300px;
+                max-width: 500px;
             }
         """)
 
     def create_layout(self):
-        preset_layout = QHBoxLayout()  # 将「预设：」和预设下拉选择框放置在一行
+        # 预设部分布局
+        preset_layout = QHBoxLayout()
         preset_layout.addWidget(self.preset_label)
         preset_layout.addWidget(self.preset_combobox)
+        preset_layout.addStretch()
 
-        input_layout = QHBoxLayout()  # 经度、经度输入框、纬度、纬度输入框放在一行
+        # 输入部分布局
+        input_layout = QHBoxLayout()
         input_layout.addWidget(self.longitude_label)
         input_layout.addWidget(self.longitude_entry)
+        input_layout.addSpacing(16)
         input_layout.addWidget(self.latitude_label)
         input_layout.addWidget(self.latitude_entry)
 
+        # 按钮布局
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.generate_button)
+        button_layout.addWidget(self.save_qr_button)
+
+        # 创建卡片容器
+        input_card = QFrame()
+        input_card.setStyleSheet("""
+            QFrame {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
+        input_card_layout = QVBoxLayout(input_card)
+        input_card_layout.addLayout(preset_layout)
+        input_card_layout.addLayout(self.save_load_delete_layout)
+        input_card_layout.addLayout(input_layout)
+        input_card_layout.addLayout(button_layout)
+
+        # 主布局
         main_layout = QVBoxLayout()
-        main_layout.addLayout(preset_layout)
-        main_layout.addLayout(self.save_load_delete_layout)
-        main_layout.addLayout(input_layout)
-        main_layout.addWidget(self.generate_button) # 添加生成按钮
-        main_layout.addWidget(self.save_qr_button)  # 添加保存按钮
-        main_layout.addWidget(self.clear_button)    # 添加清除输入框按钮
-        main_layout.addWidget(self.qr_label)        # 二维码生成label
+        main_layout.addWidget(input_card)
+        main_layout.addWidget(self.qr_label, alignment=QtCore.Qt.AlignCenter)
         main_layout.addWidget(self.info_label, alignment=QtCore.Qt.AlignCenter)
+        main_layout.setSpacing(16)
 
         self.setLayout(main_layout)
 
@@ -175,7 +226,7 @@ class QRCodeGenerator(QWidget):
         try:
             qr = qrcode.QRCode(
                 version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_Q,
+                error_correction=qrcode.ERROR_CORRECT_Q,
                 box_size=10,
                 border=4,
             )

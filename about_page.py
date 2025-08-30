@@ -11,14 +11,33 @@ class AboutPage(QWidget):
     def __init__(self):
         super().__init__()
 
+        # 设置整体边距
+        self.setContentsMargins(16, 16, 16, 16)
+
+        # 创建logo标签
         logo_label = QLabel()
         logo_pixmap = QPixmap("icon.png").scaled(300, 300)
         logo_label.setPixmap(logo_pixmap)
         logo_label.setAlignment(QtCore.Qt.AlignCenter)
+        logo_label.setStyleSheet("""
+            QLabel {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 16px;
+            }
+        """)
 
         # 创建一个容器来包含文本
         text_container = QFrame()
-        text_container.setFrameStyle(QFrame.NoFrame)  # 移除边框
+        text_container.setStyleSheet("""
+            QFrame {
+                background: white;
+                border: 1px solid #E0E0E0;
+                border-radius: 8px;
+                padding: 24px;
+            }
+        """)
         text_container_layout = QVBoxLayout()
         
         # 关于文本
@@ -50,13 +69,15 @@ V0.9.0.1 (2024.03.20)
         
         # 将文本标签添加到容器中
         text_container_layout.addWidget(about_label)
-        text_container_layout.setContentsMargins(50, 20, 50, 20)  # 设置文本容器的边距
+        text_container_layout.setContentsMargins(16, 16, 16, 16)  # 设置文本容器的边距
         text_container.setLayout(text_container_layout)
 
         # 主布局
         main_layout = QVBoxLayout()
         main_layout.addWidget(logo_label)
+        main_layout.addSpacing(24)
         main_layout.addWidget(text_container, alignment=QtCore.Qt.AlignCenter)  # 容器居中
         main_layout.setAlignment(QtCore.Qt.AlignCenter)
+        main_layout.setSpacing(16)
 
         self.setLayout(main_layout)
